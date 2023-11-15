@@ -4,6 +4,8 @@ const swaggerUi = require('swagger-ui-express');
 const databaseMiddleware = require("./db");
 const fetchRouter = require('./routes/fetch');
 const sendRouter = require('./routes/send');
+const updateRouter = require("./routes/update");
+const eraseRouter = require("./routes/erase");
 
 const app = express();
 
@@ -26,6 +28,8 @@ const specs = swaggerJsdoc(options);
 // Routes
 app.use('/', fetchRouter);
 app.use('/docs', sendRouter);
+app.use("/docs", updateRouter);
+app.use("/docs", eraseRouter);
 
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
