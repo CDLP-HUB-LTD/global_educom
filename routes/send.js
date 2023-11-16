@@ -1,19 +1,29 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require("crypto");
+const validator = require('validator');
+
 
 async function hashPassword(password) {
-  const salt = crypto.randomBytes(16).toString('hex');
-  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512');
-  return {
-    salt,
-    hashedPassword: hash.toString('hex')
-  };
+  try {
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512');
+    return {
+      salt,
+      hashedPassword: hash.toString('hex')
+    };
+  } catch (error) {
+    throw new Error('Error hashing password');
+  }
 }
 
 async function verifyPassword(password, hashedPassword, salt) {
-  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512');
-  return hashedPassword === hash.toString('hex');
+  try {
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512');
+    return hashedPassword === hash.toString('hex');
+  } catch (error) {
+    throw new Error('Error verifying password');
+  }
 }
 
 /**
@@ -43,7 +53,7 @@ router.post('/register', (req, res) => {
       return res.status(400).json({ message: 'Both passwords must match!' });
     }
 
-    const checkMailQuery = 'SELECT * FROM User WHERE user_email = ?';
+    const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
     db.query(checkMailQuery, [email], async function (err, results) {
       if (err) {
         return res.status(500).json({ message: 'Error checking email' });
@@ -55,7 +65,7 @@ router.post('/register', (req, res) => {
 
       const { salt, hashedPassword } = await hashPassword(password);
 
-      const insertUserQuery = 'INSERT INTO User (user_fname, user_lname, user_email, user_phone, user_password) VALUES (?, ?, ?, ?, ?)';
+      const insertUserQuery = 'INSERT INTO user (user_fname, user_lname, user_email, user_phone, user_password) VALUES (?, ?, ?, ?, ?)';
       db.query(insertUserQuery, [fname, lname, email, phone, hashedPassword], function (err, result) {
         if (err) {
           return res.status(500).json({ message: 'Error registering user' });
@@ -97,7 +107,7 @@ router.post('/register', (req, res) => {
       return res.status(400).json({ message: 'All fields are required' });
   }
 
-  const checkMailQuery = 'SELECT * FROM User WHERE user_email = ?';
+  const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
   db.query(checkMailQuery, [email], async (err, results) => {
       if (err) {
           return res.status(500).json({ message: 'Error checking user' });
@@ -123,7 +133,7 @@ router.post('/register', (req, res) => {
       return res.status(200).json({
           message: 'Login successful',
           user: sessionUser,
-          nextStep: '/dashboard', 
+          nextStep: '/user-dashboard', 
       });
   });
 });
@@ -167,6 +177,120 @@ router.post('/register', (req, res) => {
   }
 });
 
+
+
+/**
+ * @swagger
+ * /docs/admin/register:
+ *   post:
+ *     summary: Creates a new admin
+ *     description: Create a new admin in Global Educom
+ *     responses:
+ *       200:
+ *         description: Admin created successfully
+ */
+ router.post('/admin/register', (req, res) => {
+  try {
+    const { fname, lname, email, phone, password, confirmPassword } = req.body;
+    const role = 'admin'; 
+
+    if (![fname, lname, email, phone, password, confirmPassword].every((field) => field !== undefined && field !== null && field !== '')) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ message: 'Invalid email address' });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: 'Both passwords must match!' });
+    }
+
+    const checkMailQuery = 'SELECT * FROM admin WHERE admin_email = ?';
+    db.query(checkMailQuery, [email], async function (err, results) {
+      if (err) {
+        return res.status(500).json({ message: 'Error checking email' });
+      }
+
+      if (results.length > 0) {
+        return res.status(400).json({ message: 'Email already registered' });
+      }
+
+      const { salt, hashedPassword } = await hashPassword(password);
+
+      const insertAdminQuery = 'INSERT INTO admin (admin_fname, admin_lname, admin_email, admin_phone, admin_password) VALUES (?, ?, ?, ?, ?)';
+      db.query(insertAdminQuery, [fname, lname, email, phone, hashedPassword], function (err, result) {
+        if (err) {
+          return res.status(500).json({ message: 'Error registering admin' });
+        }
+
+        req.session.user = {
+          admin_id: result.insertId,
+          admin_fname,
+          admin_lname,
+          admin_email,
+          admin_phone
+        };
+
+        return res.status(201).json({
+          message: 'Admin registered successfully',
+          nextStep: '/next-admin-login-page'
+        });
+      });
+    });
+  } catch (error) {
+    console.error('Error during admin registration:', error);
+    return res.status(500).json({ message: 'Error registering admin' });
+  }
+});
+
+
+/**
+ * @swagger
+ * /docs/admin/login:
+ *   post:
+ *     summary: Logs in an admin
+ *     description: Logs in aa admin in Global Educom
+ *     responses:
+ *       200:
+ *         description: Login successfully
+ */
+ router.post('/admin/login', (req, res) => {
+  const { email, password } = req.body; 
+  if (!email || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const checkMailQuery = 'SELECT * FROM admin WHERE admin_email = ?';
+  db.query(checkMailQuery, [email], async (err, results) => {
+      if (err) {
+          return res.status(500).json({ message: 'Error checking admin' });
+      }
+
+      if (results.length === 0) {
+          return res.status(401).json({ message: 'Email not registered. Please register first.' });
+      }
+
+      const admin = results[0];
+      const isPasswordMatch = await verifyPassword(password, admin.admin_password, admin.salt);
+      if (!isPasswordMatch) {
+          return res.status(401).json({ message: 'Incorrect email or password' });
+      }
+
+      const sessionAdmin = {
+          admin_id: admin.admin_id,
+          admin_fname: admin.admin_fname,
+          admin_email: admin.admin_email,
+          admin_phone: admin.admin_phone,
+      };
+      req.session.admin = sessionAdmin;
+      return res.status(200).json({
+          message: 'Login successful',
+          admin: sessionAdmin,
+          nextStep: '/admin-dashboard', 
+      });
+  });
+});
 
 
 module.exports = router;
