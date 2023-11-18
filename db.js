@@ -1,7 +1,7 @@
 const mysql = require("mysql");
 
 const db = mysql.createConnection({
-    host: "77.81.244.46",
+    host: "demowordpress.vtudomain.com",
     user: "demo_admin",
     password: "Demo_Admin",
     database: "demo_api"
