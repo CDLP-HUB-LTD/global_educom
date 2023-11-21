@@ -6,6 +6,7 @@ const fetchRouter = require('./routes/fetch');
 const sendRouter = require('./routes/send');
 const updateRouter = require("./routes/update");
 const eraseRouter = require("./routes/erase");
+const connectRouter = require('./routes/connect');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use('/', fetchRouter);
 app.use('/docs', sendRouter);
 app.use("/docs", updateRouter);
 app.use("/docs", eraseRouter);
+app.use('/connect', connectRouter);
 
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
