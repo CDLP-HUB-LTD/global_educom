@@ -5,7 +5,7 @@ const router = express.Router();
 
 const apiEndpoint = 'https://globaleducomm.com';
 
-router.get('/connect-to-api', async (req, res) => {
+router.get('/api', async (req, res) => {
   try {
     const response = await axios.get(`${apiEndpoint}/api`);
 
