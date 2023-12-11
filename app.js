@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const databaseMiddleware = require("./db");
@@ -9,6 +10,10 @@ const eraseRouter = require("./routes/erase");
 const connectRouter = require('./routes/connect');
 
 const app = express();
+
+app.use(cors({
+  origin: 'https://globaleducom.vercel.app',
+}));
 
 const options = {
   definition: {
@@ -28,9 +33,9 @@ const specs = swaggerJsdoc(options);
 
 // Routes
 app.use('/', fetchRouter);
-app.use('/docs', sendRouter);
-app.use("/docs", updateRouter);
-app.use("/docs", eraseRouter);
+app.use('/docs/send', sendRouter); 
+app.use('/docs/update', updateRouter);
+app.use('/docs/erase', eraseRouter);
 app.use('/connect', connectRouter);
 
 
