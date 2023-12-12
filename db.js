@@ -145,7 +145,4 @@ db.query(createUserResourceTable, (err, result) => {
 
 
 
-module.exports = (req, res, next) => {
-    req.db = db;
-    next();
-};
+module.exports = db;
