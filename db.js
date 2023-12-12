@@ -1,20 +1,20 @@
 const mysql = require("mysql");
 
-const db = mysql.createConnection({
+const pool = mysql.createPool({
     host: "demowordpress.vtudomain.com",
     user: "demo_admin",
     password: "Demo_Admin",
     database: "demo_api"
 });
 
-db.connect((err) => {
+pool.getConnection((err, connection) => {
     if (err) {
         console.error("Error connecting to MySQL Database", err);
     } else {
         console.log("Connected to MySQL Database");
     }
+    connection.release();
 });
-
 
 // Table creation
 const createAdminTable = `
@@ -46,8 +46,8 @@ const createUserTable = `
 
 const createDisciplineTable = `
     CREATE TABLE IF NOT EXISTS discipline (
-       discipline_id INT NOT NULL AUTO_INCREMENT,
-        dicipline_name VARCHAR(120),
+        discipline_id INT NOT NULL AUTO_INCREMENT,
+        discipline_name VARCHAR(120),
         
         PRIMARY KEY (discipline_id)
     );
@@ -94,58 +94,56 @@ const createUserResourceTable = `
 `;
 
 
-db.query(createAdminTable, (err, result) => {
+pool.query(createAdminTable, (err, result) => {
     if (err) {
         console.error("Error creating admin table", err);
     } else {
         console.log("Admin table created successfully");
     }
-}); 
+});
 
-
-db.query(createUserTable, (err, result) => {
+pool.query(createUserTable, (err, result) => {
     if (err) {
         console.error("Error creating user table", err);
     } else {
         console.log("User table created successfully");
     }
-}); 
+});
 
-db.query(createDisciplineTable, (err, result) => {
+pool.query(createDisciplineTable, (err, result) => {
     if (err) {
         console.error("Error creating discipline table", err);
     } else {
-        console.log("discipline table created successfully");
+        console.log("Discipline table created successfully");
     }
-}); 
+});
 
-db.query(createCourseTable, (err, result) => {
+pool.query(createCourseTable, (err, result) => {
     if (err) {
         console.error("Error creating course table", err);
     } else {
-        console.log("course table created successfully");
+        console.log("Course table created successfully");
     }
-}); 
+});
 
-db.query(createResourceTable, (err, result) => {
+pool.query(createResourceTable, (err, result) => {
     if (err) {
         console.error("Error creating resource table", err);
     } else {
-        console.log("resource table created successfully");
+        console.log("Resource table created successfully");
     }
-}); 
+});
 
-db.query(createUserResourceTable, (err, result) => {
+pool.query(createUserResourceTable, (err, result) => {
     if (err) {
         console.error("Error creating user_resource table", err);
     } else {
         console.log("user_resource table created successfully");
     }
-}); 
-
+});
 
 
 module.exports = (req, res, next) => {
-    req.db = db;
+    req.db = pool;
     next();
 };
