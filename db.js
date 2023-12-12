@@ -143,7 +143,4 @@ pool.query(createUserResourceTable, (err, result) => {
 });
 
 
-module.exports = (req, res, next) => {
-    req.db = pool;
-    next();
-};
+module.exports = pool;
