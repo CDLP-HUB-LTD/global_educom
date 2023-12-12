@@ -9,6 +9,8 @@ const connectRouter = require('./routes/connect');
 
 const app = express();
 
+app.use(express.json());
+
 app.use(
   cors({
     origin: ['https://globaleducom.vercel.app', 'http://localhost:3000'],
