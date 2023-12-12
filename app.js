@@ -12,6 +12,15 @@ const app = express();
 app.use(express.json());
 
 app.use(
+  session({
+    secret: 'gdte73',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+
+app.use(
   cors({
     origin: ['https://globaleducom.vercel.app', 'http://localhost:3000'],
     credentials: true,
