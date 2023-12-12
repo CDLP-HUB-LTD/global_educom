@@ -4,32 +4,6 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const db = require('../db');
 
-const databaseMiddleware = require("../db")
-
-router.use(databaseMiddleware)
-
-
-// async function hashPassword(password) {
-//   try {
-//     const salt = crypto.randomBytes(16).toString('hex');
-//     const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512');
-//     return {
-//       salt,
-//       hashedPassword: hash.toString('hex')
-//     };
-//   } catch (error) {
-//     throw new Error('Error hashing password');
-//   }
-// }
-
-// async function verifyPassword(password, hashedPassword, salt) {
-//   try {
-//     const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512');
-//     return hashedPassword === hash.toString('hex');
-//   } catch (error) {
-//     throw new Error('Error verifying password');
-//   }
-// }
 
 async function hashPassword(password) {
   const saltRounds = 10;
@@ -44,10 +18,10 @@ async function verifyPassword(password, hashedPassword, salt) {
 
 
 router.post('/register', async (req, res) => {
-  const db = req.db;
   try {
     res.header('Access-Control-Allow-Origin', 'https://globaleducom.vercel.app');
     res.header('Access-Control-Allow-Credentials', true);
+    const db = req.db;
     const { fname, lname, email, phone, password, confirmPassword } = req.body;
     const role = 'user';
 
