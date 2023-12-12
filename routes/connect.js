@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
 
     const responseData = response.data;
 
-    res.json({ success: true, data: "Hello world!" });
+    // res.json({ success: true, data: "Hello world!" });
   } catch (error) {
     console.error('Error connecting to API:', error.message);
     res.status(500).json({ success: false, error: error.message });
