@@ -14,7 +14,10 @@ const app = express();
 app.use(cors({
   origin: 'https://globaleducom.vercel.app',
   credentials: true,
+  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
+  methods: 'GET, POST, PUT, DELETE',
 }));
+
 
 
 const options = {
@@ -28,9 +31,6 @@ const options = {
   },
   apis: ['./routes/*.js'], 
 };
-
-app.options('*', cors());
-
 
 app.use(databaseMiddleware);
 
@@ -50,9 +50,11 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Origin', 'https://globaleducom.vercel.app');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
+
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
