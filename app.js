@@ -29,16 +29,20 @@ const options = {
   apis: ['./routes/*.js'], 
 };
 
+app.options('*', cors());
+
+
 app.use(databaseMiddleware);
 
 const specs = swaggerJsdoc(options);
 
 // Routes
 app.use('/', fetchRouter);
-app.use('/docs/send', sendRouter); 
-app.use('/docs/update', updateRouter);
-app.use('/docs/erase', eraseRouter);
+app.use('/docs/send', cors(), sendRouter); 
+app.use('/docs/update', cors(), updateRouter);
+app.use('/docs/erase', cors(), eraseRouter);
 app.use('/connect', connectRouter);
+
 
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
