@@ -2,23 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 
-/**
- * @swagger
- * /docs/resources/resource/{id}:
- *   put:
- *     summary: Updates data for a specific resource materials
- *     description: UPDATE RESOURCE By ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: REESOURCE ID
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: UPDATES RESOURCE MATERIAL by ID
- */
  router.put("/resources/resource/:id", (req, res) => {
     const resourceId = req.params.id;
     const { title, course_id, description, content, img } = req.body;
@@ -51,23 +34,7 @@ const router = express.Router();
     }
 });
 
-/**
- * @swagger
- * /docs/resources/approve-resource/{id}:
- *   put:
- *     summary: Approve a resource material
- *     description: Approve Resource Material (Admin Only)
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: RESOURCE ID
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Resource material approved successfully
- */
+
  router.put('/resources/approve-resource/:id', (req, res) => {
     const db = req.db;
     const userRole = req.session.user.role;
@@ -99,8 +66,6 @@ const router = express.Router();
     });
 });
 
+
 module.exports = router;
 
-
-
-module.exports = router

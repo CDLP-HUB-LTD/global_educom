@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
+// const swaggerJsdoc = require('swagger-jsdoc');
+// const swaggerUi = require('swagger-ui-express');
 const databaseMiddleware = require('./db');
 const fetchRouter = require('./routes/fetch');
 const sendRouter = require('./routes/send');
@@ -14,10 +14,8 @@ const app = express();
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
 
-      // Check if the origin is allowed
       const allowedOrigins = ['https://globaleducom.vercel.app', 'http://localhost:3000'];
       if (allowedOrigins.indexOf(origin) === -1) {
         const msg = 'The CORS policy for this site does not allow access from the specified origin.';
@@ -55,7 +53,7 @@ app.use('/docs/update', cors(), updateRouter);
 app.use('/docs/erase', cors(), eraseRouter);
 app.use('/connect', connectRouter);
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
+// app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

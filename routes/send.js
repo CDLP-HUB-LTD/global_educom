@@ -37,16 +37,7 @@ async function verifyPassword(password, hashedPassword) {
   return await bcrypt.compare(password, hashedPassword);
 }
 
-/**
- * @swagger
- * /docs/register:
- *   post:
- *     summary: Creates a new user
- *     description: Create a new user in Global Educom
- *     responses:
- *       200:
- *         description: User created successfully
- */
+
 router.post('/register', async (req, res) => {
   try {
     res.header('Access-Control-Allow-Origin', 'https://globaleducom.vercel.app');
@@ -87,16 +78,6 @@ router.post('/register', async (req, res) => {
 });
 
 
-/**
- * @swagger
- * /docs/login:
- *   post:
- *     summary: Logs in a user
- *     description: Logs in a user in Global Educom
- *     responses:
- *       200:
- *         description: Login successfully
- */
  router.post('/login', (req, res) => {
   const { email, password } = req.body; 
   if (!email || !password) {
@@ -136,16 +117,7 @@ router.post('/register', async (req, res) => {
   });
 });
 
-/**
- * @swagger
- * /docs/resources/resource:
- *   post:
- *     summary: Creates a new resource material
- *     description: Create a new resource material in Global Educom
- *     responses:
- *       200:
- *         description: Resource material created successfully
- */
+
  router.post("/resources/resource", (req, res) => {
   const { title, course_id, description, content, img } = req.body;
   const userId = req.session.user.user_id; 
@@ -176,17 +148,6 @@ router.post('/register', async (req, res) => {
 });
 
 
-
-/**
- * @swagger
- * /docs/admin/register:
- *   post:
- *     summary: Creates a new admin
- *     description: Create a new admin in Global Educom
- *     responses:
- *       200:
- *         description: Admin created successfully
- */
  router.post('/admin/register', (req, res) => {
   try {
     const { fname, lname, email, phone, password, confirmPassword } = req.body;
@@ -243,16 +204,6 @@ router.post('/register', async (req, res) => {
 });
 
 
-/**
- * @swagger
- * /docs/admin/login:
- *   post:
- *     summary: Logs in an admin
- *     description: Logs in aa admin in Global Educom
- *     responses:
- *       200:
- *         description: Login successfully
- */
  router.post('/admin/login', (req, res) => {
   const { email, password } = req.body; 
   if (!email || !password) {

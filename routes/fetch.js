@@ -1,32 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-// GET REQUESTS
-/**
- * @swagger
- * /docs:
- *   get:
- *     summary: Returns the landing for the API
- *     description: Fetch Educom
- *     responses:
- *       200:
- *         description: Fetch Global Educom
- */
 router.get('/', (req, res) => {
 res.json({ message: "Welcome to Global Educom" });
 });
 
 
-/**
- * @swagger
- * /docs/users:
- *   get:
- *     summary: Returns data for all users
- *     description: Get All Users
- *     responses:
- *       200:
- *         description: Get All Users
- */
  router.get('/users', (req, res) => {
     const db = req.db;
     db.query('SELECT * FROM user', (err, results) => {
@@ -43,23 +22,6 @@ res.json({ message: "Welcome to Global Educom" });
     });
 });
 
-/**
- * @swagger
- * /docs/users/user/{id}:
- *   get:
- *     summary: Returns data for a specific user
- *     description: Get User By ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: User ID
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Get User by ID
- */
  router.get('/users/user/:id', (req, res) => {
     const db = req.db;
     const userId = req.params.id;
@@ -83,16 +45,6 @@ res.json({ message: "Welcome to Global Educom" });
 });
 
 
-/**
- * @swagger
- * /docs/courses:
- *   get:
- *     summary: Returns data for all courses
- *     description: Get All Courses
- *     responses:
- *       200:
- *         description: Get All Courses
- */
 router.get('/courses', (req, res) => {
     const db = req.db;
     db.query('SELECT * FROM course', (err, results) => {
@@ -110,23 +62,7 @@ router.get('/courses', (req, res) => {
 });
 
 
-/**
- * @swagger
- * /docs/courses/course/{id}:
- *     get:
- *     summary: Returns data for a specific course
- *     description: Get Course By ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: Course ID
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Get Course by ID
- */
+
 router.get('/courses/course/:id', (req, res) => {
     const db = req.db;
     const courseId = req.params.id;
@@ -148,16 +84,7 @@ router.get('/courses/course/:id', (req, res) => {
     });
 });
 
-/**
- * @swagger
- * /docs/disciplines:
- *   get:
- *     summary: Returns data for all disciplines
- *     description: Get All Disciplines
- *     responses:
- *       200:
- *         description: Get All Disciplines
- */
+
 router.get('/disciplines', (req, res) => {
     const db = req.db;
     db.query('SELECT * FROM discipline', (err, results) => {
@@ -175,23 +102,6 @@ router.get('/disciplines', (req, res) => {
 });
 
 
-/**
- * @swagger
- * /docs/disciplines/discipline/{id}:
- *    get:
- *     summary: Returns data for a specific discipline
- *     description: Get Discipline By ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: DISCIPLINE ID
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Get Discipline by ID
- */
 router.get('/disciplines/discipline/:id', (req, res) => {
     const db = req.db;
     const disciplineId = req.params.id;
@@ -213,19 +123,9 @@ router.get('/disciplines/discipline/:id', (req, res) => {
     });
 });
 
-/**
- * @swagger
- * /docs/resources:
- *   get:
- *     summary: Returns data for all approved resource materials
- *     description: Get All Approved Resourse Materials
- *     responses:
- *       200:
- *         description: Get All Approved Resource Materials
- */
+
  router.get('/resources', (req, res) => {
     const db = req.db;
-    // Assuming 'status' column in your resource table
     const status = 'approved';
     db.query('SELECT * FROM resource WHERE status = ?', [status], (err, results) => {
         if (err) {
@@ -241,23 +141,7 @@ router.get('/disciplines/discipline/:id', (req, res) => {
     });
 });
 
-/**
- * @swagger
- * /docs/resources/resource/{id}:
- *   get:
- *     summary: Returns data for a specific approved Resource Material
- *     description: Get Approved Resource Material By ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: RESOURCE ID
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Get Approved Resource Material by ID
- */
+
 router.get('/resources/resource/:id', (req, res) => {
     const db = req.db;
     const resourceId = req.params.id;
@@ -282,16 +166,6 @@ router.get('/resources/resource/:id', (req, res) => {
 });
 
 
-/**
- * @swagger
- * /docs/resources/pending-resources:
- *   get:
- *     summary: Returns data for all pending resource materials
- *     description: Get All Pending Resourse Materials (Admin Only)
- *     responses:
- *       200:
- *         description: Get All Pending Resource Materials
- */
  router.get('/resources/pending-resources', (req, res) => {
     const db = req.db;
     const userRole = req.session.user.role;
