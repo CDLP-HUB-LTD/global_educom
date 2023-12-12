@@ -5,6 +5,7 @@ const sendRouter = require('./routes/send');
 const updateRouter = require('./routes/update');
 const eraseRouter = require('./routes/erase');
 const connectRouter = require('./routes/connect');
+const pool = require('./db'); // Add this line
 
 const app = express();
 
@@ -42,7 +43,6 @@ const databaseMiddleware = (req, res, next) => {
     next();
   });
 };
-
 
 app.use(databaseMiddleware);
 
