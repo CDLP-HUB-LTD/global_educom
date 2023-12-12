@@ -145,4 +145,7 @@ db.query(createUserResourceTable, (err, result) => {
 
 
 
-module.exports = db;
+module.exports = (req, res, next) => {
+    req.db = db;  // Assuming 'db' is already defined elsewhere
+    next();
+};
