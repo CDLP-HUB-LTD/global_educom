@@ -49,6 +49,8 @@ async function verifyPassword(password, hashedPassword) {
  */
 router.post('/register', async (req, res) => {
   try {
+    res.header('Access-Control-Allow-Origin', 'https://globaleducom.vercel.app');
+    res.header('Access-Control-Allow-Credentials', true);
     const { fname, lname, email, phone, password, confirmPassword } = req.body;
     const role = 'user';
 
