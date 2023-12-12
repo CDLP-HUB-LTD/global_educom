@@ -37,6 +37,11 @@ router.post('/register', async (req, res) => {
 
     const insertUserQuery = 'INSERT INTO user (user_fname, user_lname, user_email, user_phone, user_password) VALUES (?, ?, ?, ?, ?)';
     const result = await database.query(insertUserQuery, [fname, lname, email, phone, hashedPassword]);
+
+    if (!req.session) {
+      req.session = {};
+    }
+
     req.session.user = {
       user_id: result.insertId,
       user_fname: fname,
