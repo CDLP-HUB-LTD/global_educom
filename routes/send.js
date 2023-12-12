@@ -56,15 +56,14 @@ router.post('/register', async (req, res) => {
 
     const insertUserQuery = 'INSERT INTO user (user_fname, user_lname, user_email, user_phone, user_password) VALUES (?, ?, ?, ?, ?)';
     const result = await db.query(insertUserQuery, [fname, lname, email, phone, hashedPassword]);
-
     req.session.user = {
       user_id: result.insertId,
-      user_fname,
-      user_lname,
-      user_email,
-      user_phone,
+      user_fname: fname,
+      user_lname: lname,
+      user_email: email,
+      user_phone: phone,
+      role: 'user',
     };
-
     return res.status(201).json({
       message: 'User registered successfully',
       nextStep: '/next-login-page',
@@ -183,12 +182,14 @@ router.post('/register', async (req, res) => {
           return res.status(500).json({ message: 'Error registering admin' });
         }
 
-        req.session.user = {
+        const result = await db.query(insertAdminQuery, [fname, lname, email, phone, hashedPassword]);
+        req.session.admin = {
           admin_id: result.insertId,
-          admin_fname,
-          admin_lname,
-          admin_email,
-          admin_phone
+          admin_fname: fname,
+          admin_lname: lname,
+          admin_email: email,
+          admin_phone: phone,
+          role: 'admin', // Add a role property for distinction
         };
 
         return res.status(201).json({
