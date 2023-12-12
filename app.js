@@ -9,7 +9,12 @@ const connectRouter = require('./routes/connect');
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ['https://globaleducom.vercel.app', 'http://localhost:3000'],
+    credentials: true,
+  })
+);
 
 // app.use(
 //   cors({
@@ -40,7 +45,7 @@ const options = {
   apis: ['./routes/*.js'],
 };
 
-app.options('*', cors());
+// app.options('*', cors());
 
 app.use(databaseMiddleware);
 
