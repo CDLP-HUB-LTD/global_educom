@@ -117,7 +117,7 @@ router.post('/register', async (req, res) => {
 });
 
 
- router.post("/resources/resource", (req, res) => {
+router.post("/resources/resource", (req, res) => {
   const { title, course_id, description, content, img } = req.body;
   const userId = req.session.user.user_id; 
   const userRole = req.session.user.role; 
