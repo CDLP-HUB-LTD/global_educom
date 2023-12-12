@@ -48,9 +48,9 @@ const specs = swaggerJsdoc(options);
 
 // Routes
 app.use('/', fetchRouter);
-app.use('/docs/send', cors(), sendRouter);
-app.use('/docs/update', cors(), updateRouter);
-app.use('/docs/erase', cors(), eraseRouter);
+app.use('/send', cors(), sendRouter);
+app.use('/update', cors(), updateRouter);
+app.use('/erase', cors(), eraseRouter);
 app.use('/connect', connectRouter);
 
 // app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
