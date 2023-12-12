@@ -13,7 +13,19 @@ const app = express();
 
 app.use(
   cors({
-    origin: 'https://globaleducom.vercel.app',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      // Check if the origin is allowed
+      const allowedOrigins = ['https://globaleducom.vercel.app', 'http://localhost:3000'];
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = 'The CORS policy for this site does not allow access from the specified origin.';
+        return callback(new Error(msg), false);
+      }
+
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
@@ -35,12 +47,6 @@ app.options('*', cors());
 app.use(databaseMiddleware);
 
 const specs = swaggerJsdoc(options);
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
 
 // Routes
 app.use('/', fetchRouter);
