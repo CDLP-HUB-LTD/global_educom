@@ -9,34 +9,36 @@ const connectRouter = require('./routes/connect');
 
 const app = express();
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
+app.use(cors());
 
-      const allowedOrigins = ['https://globaleducom.vercel.app', 'http://localhost:3000'];
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = 'The CORS policy for this site does not allow access from the specified origin.';
-        return callback(new Error(msg), false);
-      }
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       if (!origin) return callback(null, true);
 
-      return callback(null, true);
-    },
-    credentials: true,
-  })
-);
+//       const allowedOrigins = ['https://globaleducom.vercel.app', 'http://localhost:3000'];
+//       if (allowedOrigins.indexOf(origin) === -1) {
+//         const msg = 'The CORS policy for this site does not allow access from the specified origin.';
+//         return callback(new Error(msg), false);
+//       }
 
-const options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Global Educom API',
-      version: '1.0.0',
-      description: 'The API for Global Educom',
-    },
-  },
-  apis: ['./routes/*.js'],
-};
+//       return callback(null, true);
+//     },
+//     credentials: true,
+//   })
+// );
+
+// const options = {
+//   definition: {
+//     openapi: '3.0.0',
+//     info: {
+//       title: 'Global Educom API',
+//       version: '1.0.0',
+//       description: 'The API for Global Educom',
+//     },
+//   },
+//   apis: ['./routes/*.js'],
+// };
 
 app.options('*', cors());
 
@@ -45,10 +47,10 @@ app.use(databaseMiddleware);
 
 // Routes
 app.use('/', fetchRouter);
-app.use('/send', cors(), sendRouter);
-app.use('/update', cors(), updateRouter);
-app.use('/erase', cors(), eraseRouter);
-app.use('/connect', cors(), connectRouter);
+app.use('/send', sendRouter);
+app.use('/update', updateRouter);
+app.use('/erase', eraseRouter);
+app.use('/connect', connectRouter);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
