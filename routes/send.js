@@ -41,7 +41,7 @@ router.post('/register', async (req, res) => {
     if (!req.session) {
       req.session = {};
     }
-
+    
     req.session.user = {
       user_id: result.insertId,
       user_fname: fname,
