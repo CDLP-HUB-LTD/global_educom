@@ -47,7 +47,7 @@ const options = {
   apis: ['./routes/*.js'],
 };
 
-app.options('*', cors());
+// app.options('*', cors());
 
 app.use(databaseMiddleware);
 
