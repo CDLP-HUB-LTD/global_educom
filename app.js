@@ -11,12 +11,15 @@ const connectRouter = require('./routes/connect');
 
 const app = express();
 
-app.use(cors({
-  origin: 'https://globaleducom.vercel.app',
-  credentials: true,
-  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
-  methods: 'GET, POST, PUT, DELETE',
-}));
+// app.use(cors({
+//   origin: 'https://globaleducom.vercel.app',
+//   credentials: true,
+//   allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
+//   methods: 'GET, POST, PUT, DELETE',
+// }));
+
+app.use(cors());
+
 
 
 
