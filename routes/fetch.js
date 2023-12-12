@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const database = require('../db');
 
 router.get('/', (req, res) => {
 res.json({ message: "Welcome to Global Educom" });
@@ -8,7 +9,7 @@ res.json({ message: "Welcome to Global Educom" });
 
  router.get('/users', (req, res) => {
     const db = req.db;
-    db.query('SELECT * FROM user', (err, results) => {
+    database.query('SELECT * FROM user', (err, results) => {
         if (err) {
             console.error("Error fetching data from the database", err);
             res.status(500).json({ Message: "Internal Server Error" });
@@ -30,7 +31,7 @@ res.json({ message: "Welcome to Global Educom" });
         return res.status(400).json({ message: "Invalid user ID provided" });
     }
 
-    db.query('SELECT * FROM user WHERE user_id = ?', [userId], (err, results) => {
+    database.query('SELECT * FROM user WHERE user_id = ?', [userId], (err, results) => {
         if (err) {
             console.error("Error fetching data from the database", err);
             return res.status(500).json({ Message: "Internal Server Error", details: err.message });
@@ -47,7 +48,7 @@ res.json({ message: "Welcome to Global Educom" });
 
 router.get('/courses', (req, res) => {
     const db = req.db;
-    db.query('SELECT * FROM course', (err, results) => {
+    database.query('SELECT * FROM course', (err, results) => {
         if (err) {
             console.error("Error fetching data from the database", err);
             res.status(500).json({ Message: "Internal Server Error" });
@@ -70,7 +71,7 @@ router.get('/courses/course/:id', (req, res) => {
         return res.status(400).json({ Message: "Invalid course ID provided" });
     }
 
-    db.query('SELECT * FROM course WHERE course_id = ?', [courseId], (err, results) => {
+    database.query('SELECT * FROM course WHERE course_id = ?', [courseId], (err, results) => {
         if (err) {
             console.error("Error fetching data from the database", err);
             return res.status(500).json({ Message: "Internal Server Error", details: err.message });
@@ -87,7 +88,7 @@ router.get('/courses/course/:id', (req, res) => {
 
 router.get('/disciplines', (req, res) => {
     const db = req.db;
-    db.query('SELECT * FROM discipline', (err, results) => {
+    database.query('SELECT * FROM discipline', (err, results) => {
         if (err) {
             console.error("Error fetching data from the database", err);
             res.status(500).json({ Message: "Internal Server Error" });
@@ -109,7 +110,7 @@ router.get('/disciplines/discipline/:id', (req, res) => {
         return res.status(400).json({ Message: "Invalid discipline ID provided" });
     }
 
-    db.query('SELECT * FROM discipline WHERE discipline_id = ?', [disciplineId], (err, results) => {
+    database.query('SELECT * FROM discipline WHERE discipline_id = ?', [disciplineId], (err, results) => {
         if (err) {
             console.error("Error fetching data from the database", err);
             return res.status(500).json({ Message: "Internal Server Error", details: err.message });
@@ -127,7 +128,7 @@ router.get('/disciplines/discipline/:id', (req, res) => {
  router.get('/resources', (req, res) => {
     const db = req.db;
     const status = 'approved';
-    db.query('SELECT * FROM resource WHERE status = ?', [status], (err, results) => {
+    database.query('SELECT * FROM resource WHERE status = ?', [status], (err, results) => {
         if (err) {
             console.error("Error fetching data from the database", err);
             res.status(500).json({ Message: "Internal Server Error" });
@@ -151,7 +152,7 @@ router.get('/resources/resource/:id', (req, res) => {
     }
 
     const status = 'approved';
-    db.query('SELECT * FROM resource WHERE resource_id = ? AND status = ?', [resourceId, status], (err, results) => {
+    database.query('SELECT * FROM resource WHERE resource_id = ? AND status = ?', [resourceId, status], (err, results) => {
         if (err) {
             console.error("Error fetching data from the database", err);
             return res.status(500).json({ Message: "Internal Server Error", details: err.message });
@@ -176,7 +177,7 @@ router.get('/resources/resource/:id', (req, res) => {
 
     const status = 'pending';
 
-    db.query('SELECT * FROM resource WHERE status = ?', [status], (err, results) => {
+    database.query('SELECT * FROM resource WHERE status = ?', [status], (err, results) => {
         if (err) {
             console.error("Error fetching data from the database", err);
             res.status(500).json({ Message: "Internal Server Error" });

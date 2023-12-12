@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const database = require('../db');
+
 
 
  router.put("/resources/resource/:id", (req, res) => {
@@ -15,7 +17,7 @@ const router = express.Router();
                 resource_content = ?, resource_img = ?
             WHERE resource_id = ?`;
 
-        db.query(
+        database.query(
             updateResourceQuery,
             [title, course_id, description, content, img, resourceId],
             (err, result) => {
@@ -49,7 +51,7 @@ const router = express.Router();
         WHERE resource_id = ?
     `;
 
-    db.query(updateStatusQuery, [resourceId], (err, result) => {
+    database.query(updateStatusQuery, [resourceId], (err, result) => {
         if (err) {
             console.error("Error updating resource status in the database", err);
             return res.status(500).json({ message: "Internal Server Error" });

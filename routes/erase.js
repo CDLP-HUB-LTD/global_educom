@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const database = require('../db');
+
 
 
  router.delete('/resources/delete-resource/:id', (req, res) => {
@@ -18,7 +20,7 @@ const router = express.Router();
         deleteQuery = 'DELETE FROM resource WHERE resource_id = ? AND user_id = ? AND status = "approved"';
     }
 
-    db.query(deleteQuery, [resourceId, userId], (err, result) => {
+    database.query(deleteQuery, [resourceId, userId], (err, result) => {
         if (err) {
             console.error("Error deleting resource from the database", err);
             return res.status(500).json({ message: "Internal Server Error" });

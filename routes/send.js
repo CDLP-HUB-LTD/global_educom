@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const validator = require('validator');
-const db = require('../db');
+const database = require('../db');
 
 
 
@@ -27,7 +27,7 @@ router.post('/register', async (req, res) => {
     const role = 'user';
 
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
-    const results = await db.query(checkMailQuery, [email]);
+    const results = await database.query(checkMailQuery, [email]);
 
     if (results.length > 0) {
       return res.status(400).json({ message: 'Email already registered', flashType: 'error' });
@@ -36,7 +36,7 @@ router.post('/register', async (req, res) => {
     const { salt, hashedPassword } = await hashPassword(password);
 
     const insertUserQuery = 'INSERT INTO user (user_fname, user_lname, user_email, user_phone, user_password) VALUES (?, ?, ?, ?, ?)';
-    const result = await db.query(insertUserQuery, [fname, lname, email, phone, hashedPassword]);
+    const result = await database.query(insertUserQuery, [fname, lname, email, phone, hashedPassword]);
     req.session.user = {
       user_id: result.insertId,
       user_fname: fname,
@@ -65,7 +65,7 @@ router.post('/register', async (req, res) => {
   }
 
   const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
-  db.query(checkMailQuery, [email], async (err, results) => {
+  database.query(checkMailQuery, [email], async (err, results) => {
       if (err) {
           return res.status(500).json({ message: 'Error checking user' });
       }
@@ -111,7 +111,7 @@ router.post("/resources/resource", (req, res) => {
 
     const insertResourceQuery = 'INSERT INTO resource (resource_title, resource_course_id, resource_description, resource_content, resource_img, status) VALUES (?, ?, ?, ?, ?, ?)';
     
-    db.query(insertResourceQuery, [title, course_id, description, content, img, status], function (err, result) {
+    database.query(insertResourceQuery, [title, course_id, description, content, img, status], function (err, result) {
       if (err) {
         return res.status(500).json({ message: 'Error creating resource' });
       }
@@ -146,7 +146,7 @@ router.post('/admin/register', async (req, res) => {
     }
 
     const checkMailQuery = 'SELECT * FROM admin WHERE admin_email = ?';
-    const results = await db.query(checkMailQuery, [email]);
+    const results = await database.query(checkMailQuery, [email]);
 
     if (results.length > 0) {
       return res.status(400).json({ message: 'Email already registered' });
@@ -155,7 +155,7 @@ router.post('/admin/register', async (req, res) => {
     const { salt, hashedPassword } = await hashPassword(password);
 
     const insertAdminQuery = 'INSERT INTO admin (admin_fname, admin_lname, admin_email, admin_phone, admin_password) VALUES (?, ?, ?, ?, ?)';
-    const result = await db.query(insertAdminQuery, [fname, lname, email, phone, hashedPassword]);
+    const result = await database.query(insertAdminQuery, [fname, lname, email, phone, hashedPassword]);
 
     req.session.admin = {
       admin_id: result.insertId,
@@ -186,7 +186,7 @@ router.post('/admin/register', async (req, res) => {
   }
 
   const checkMailQuery = 'SELECT * FROM admin WHERE admin_email = ?';
-  db.query(checkMailQuery, [email], async (err, results) => {
+  database.query(checkMailQuery, [email], async (err, results) => {
       if (err) {
           return res.status(500).json({ message: 'Error checking admin' });
       }
