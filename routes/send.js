@@ -147,7 +147,7 @@ router.post('/register', async (req, res) => {
 });
 
 
- router.post('/admin/register', (req, res) => {
+router.post('/admin/register', async (req, res) => {
   try {
     const { fname, lname, email, phone, password, confirmPassword } = req.body;
     const role = 'admin'; 
@@ -165,44 +165,37 @@ router.post('/register', async (req, res) => {
     }
 
     const checkMailQuery = 'SELECT * FROM admin WHERE admin_email = ?';
-    db.query(checkMailQuery, [email], async function (err, results) {
-      if (err) {
-        return res.status(500).json({ message: 'Error checking email' });
-      }
+    const results = await db.query(checkMailQuery, [email]);
 
-      if (results.length > 0) {
-        return res.status(400).json({ message: 'Email already registered' });
-      }
+    if (results.length > 0) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
 
-      const { salt, hashedPassword } = await hashPassword(password);
+    const { salt, hashedPassword } = await hashPassword(password);
 
-      const insertAdminQuery = 'INSERT INTO admin (admin_fname, admin_lname, admin_email, admin_phone, admin_password) VALUES (?, ?, ?, ?, ?)';
-      db.query(insertAdminQuery, [fname, lname, email, phone, hashedPassword], function (err, result) {
-        if (err) {
-          return res.status(500).json({ message: 'Error registering admin' });
-        }
+    const insertAdminQuery = 'INSERT INTO admin (admin_fname, admin_lname, admin_email, admin_phone, admin_password) VALUES (?, ?, ?, ?, ?)';
+    const result = await db.query(insertAdminQuery, [fname, lname, email, phone, hashedPassword]);
 
-        const result = await db.query(insertAdminQuery, [fname, lname, email, phone, hashedPassword]);
-        req.session.admin = {
-          admin_id: result.insertId,
-          admin_fname: fname,
-          admin_lname: lname,
-          admin_email: email,
-          admin_phone: phone,
-          role: 'admin', 
-        };
+    req.session.admin = {
+      admin_id: result.insertId,
+      admin_fname: fname,
+      admin_lname: lname,
+      admin_email: email,
+      admin_phone: phone,
+      role: 'admin', 
+    };
 
-        return res.status(201).json({
-          message: 'Admin registered successfully',
-          nextStep: '/next-admin-login-page'
-        });
-      });
+    return res.status(201).json({
+      message: 'Admin registered successfully',
+      nextStep: '/next-admin-login-page'
     });
+
   } catch (error) {
     console.error('Error during admin registration:', error);
     return res.status(500).json({ message: 'Error registering admin' });
   }
 });
+
 
 
  router.post('/admin/login', (req, res) => {
