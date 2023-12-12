@@ -7,9 +7,9 @@ const apiEndpoint = 'https://globaleducomm.com';
 
 router.get('/', async (req, res) => {
   try {
-    // const response = await axios.get(`${apiEndpoint}/api`);
+    const response = await axios.get(`${apiEndpoint}/api`);
 
-    // const responseData = response.data;
+    const responseData = response.data;
 
     res.json({ success: true, data: "Hello world!" });
   } catch (error) {
