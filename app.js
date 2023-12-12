@@ -18,23 +18,6 @@ app.use(
   })
 );
 
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       if (!origin) return callback(null, true);
-
-//       const allowedOrigins = ['https://globaleducom.vercel.app', 'http://localhost:3000'];
-//       if (allowedOrigins.indexOf(origin) === -1) {
-//         const msg = 'The CORS policy for this site does not allow access from the specified origin.';
-//         return callback(new Error(msg), false);
-//       }
-
-//       return callback(null, true);
-//     },
-//     credentials: true,
-//   })
-// );
-
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -47,10 +30,21 @@ const options = {
   apis: ['./routes/*.js'],
 };
 
-// app.options('*', cors());
+app.options('*', cors());
+
+const databaseMiddleware = (req, res, next) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error('Error getting database connection:', err);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+
+    req.db = connection;
+    next();
+  });
+};
 
 app.use(databaseMiddleware);
-
 
 // Routes
 app.use('/', fetchRouter);

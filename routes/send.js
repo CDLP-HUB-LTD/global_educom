@@ -5,6 +5,7 @@ const validator = require('validator');
 const db = require('../db');
 
 
+
 async function hashPassword(password) {
   const saltRounds = 10;
   const salt = await bcrypt.genSalt(saltRounds);
@@ -58,7 +59,6 @@ router.post('/register', async (req, res) => {
 
 
  router.post('/login', (req, res) => {
-  const db = req.db;
   const { email, password } = req.body; 
   if (!email || !password) {
     return res.status(400).json({ message: 'All fields are required', flashType: 'error' });
@@ -99,7 +99,6 @@ router.post('/register', async (req, res) => {
 
 
 router.post("/resources/resource", (req, res) => {
-  const db = req.db;
   const { title, course_id, description, content, img } = req.body;
   const userId = req.session.user.user_id; 
   const userRole = req.session.user.role; 
@@ -130,7 +129,6 @@ router.post("/resources/resource", (req, res) => {
 
 
 router.post('/admin/register', async (req, res) => {
-  const db = req.db;
   try {
     const { fname, lname, email, phone, password, confirmPassword } = req.body;
     const role = 'admin'; 
@@ -182,7 +180,6 @@ router.post('/admin/register', async (req, res) => {
 
 
  router.post('/admin/login', (req, res) => {
-  const db = req.db;
   const { email, password } = req.body; 
   if (!email || !password) {
       return res.status(400).json({ message: 'All fields are required' });
