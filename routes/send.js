@@ -52,23 +52,11 @@ router.post('/register', async (req, res) => {
     const { fname, lname, email, phone, password, confirmPassword } = req.body;
     const role = 'user';
 
-    if (![fname, lname, email, phone, password, confirmPassword].every((field) => field !== undefined && field !== null && field !== '')) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({ message: 'Invalid email address' });
-    }
-
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: 'Both passwords must match!' });
-    }
-
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
     const results = await db.query(checkMailQuery, [email]);
 
     if (results.length > 0) {
-      return res.status(400).json({ message: 'Email already registered' });
+      return res.status(400).json({ message: 'Email already registered', flashType: 'error' });
     }
 
     const { salt, hashedPassword } = await hashPassword(password);
@@ -87,10 +75,12 @@ router.post('/register', async (req, res) => {
     return res.status(201).json({
       message: 'User registered successfully',
       nextStep: '/next-login-page',
+      flashMessage: 'Registration successful!', 
+      flashType: 'success', 
     });
   } catch (error) {
     console.error('Error during user registration:', error);
-    return res.status(500).json({ message: 'Error registering user' });
+    return res.status(500).json({ message: 'Error registering user', flashType: 'error' });
   }
 });
 
