@@ -54,10 +54,10 @@ app.use(databaseMiddleware);
 
 // Routes
 app.use('/', fetchRouter);
-app.use('/', sendRouter);
-app.use('/', updateRouter);
-app.use('/', eraseRouter);
-app.use('/', connectRouter);
+app.use('/send', sendRouter);
+app.use('/update', updateRouter);
+app.use('/erase', eraseRouter);
+app.use('/connect', connectRouter);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
