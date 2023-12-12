@@ -122,8 +122,8 @@ router.post("/resources/resource", (req, res) => {
       });
     });
   } else {
-    // User is not authorized to create a resource
-    res.status(403).json({ message: 'Unauthorized access' });
+
+    res.status(403).json({ message: 'Unauthorized access' }); // User is not authorized to create a resource
   }
 });
 
