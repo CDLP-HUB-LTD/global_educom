@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const crypto = require("crypto");
 const validator = require('validator');
+const db = require('../db');
 
 
 // async function hashPassword(password) {
