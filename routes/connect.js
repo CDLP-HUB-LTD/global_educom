@@ -1,8 +1,11 @@
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors'); // Add this line
 const router = express.Router();
 
 const apiEndpoint = 'https://globaleducomm.com';
+
+router.use(cors());
 
 router.get('/', async (req, res) => {
   try {
@@ -15,6 +18,5 @@ router.get('/', async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
 
 module.exports = router;

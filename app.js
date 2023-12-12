@@ -1,7 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-// const swaggerJsdoc = require('swagger-jsdoc');
-// const swaggerUi = require('swagger-ui-express');
 const databaseMiddleware = require('./db');
 const fetchRouter = require('./routes/fetch');
 const sendRouter = require('./routes/send');
@@ -53,7 +51,6 @@ app.use('/update', cors(), updateRouter);
 app.use('/erase', cors(), eraseRouter);
 app.use('/connect', connectRouter);
 
-// app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
