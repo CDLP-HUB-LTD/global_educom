@@ -13,7 +13,9 @@ const app = express();
 
 app.use(cors({
   origin: 'https://globaleducom.vercel.app',
+  credentials: true,
 }));
+
 
 const options = {
   definition: {
