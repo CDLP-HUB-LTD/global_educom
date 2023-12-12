@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const databaseMiddleware = require('./db');
 const fetchRouter = require('./routes/fetch');
 const sendRouter = require('./routes/send');
 const updateRouter = require('./routes/update');
