@@ -28,17 +28,17 @@ app.use(cors());
 //   })
 // );
 
-// const options = {
-//   definition: {
-//     openapi: '3.0.0',
-//     info: {
-//       title: 'Global Educom API',
-//       version: '1.0.0',
-//       description: 'The API for Global Educom',
-//     },
-//   },
-//   apis: ['./routes/*.js'],
-// };
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Global Educom API',
+      version: '1.0.0',
+      description: 'The API for Global Educom',
+    },
+  },
+  apis: ['./routes/*.js'],
+};
 
 app.options('*', cors());
 
