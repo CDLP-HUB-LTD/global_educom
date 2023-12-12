@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const crypto = require("crypto");
+const bcrypt = require('bcrypt');
 const validator = require('validator');
 const db = require('../db');
+
+const databaseMiddleware = require("../db")
+
+router.use(databaseMiddleware)
 
 
 // async function hashPassword(password) {
@@ -34,7 +38,7 @@ async function hashPassword(password) {
   return { salt, hashedPassword };
 }
 
-async function verifyPassword(password, hashedPassword) {
+async function verifyPassword(password, hashedPassword, salt) {
   return await bcrypt.compare(password, hashedPassword);
 }
 
