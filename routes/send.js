@@ -189,7 +189,7 @@ router.post('/register', async (req, res) => {
           admin_lname: lname,
           admin_email: email,
           admin_phone: phone,
-          role: 'admin', // Add a role property for distinction
+          role: 'admin', 
         };
 
         return res.status(201).json({
