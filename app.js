@@ -42,15 +42,13 @@ app.options('*', cors());
 
 app.use(databaseMiddleware);
 
-const specs = swaggerJsdoc(options);
 
 // Routes
 app.use('/', fetchRouter);
 app.use('/send', cors(), sendRouter);
 app.use('/update', cors(), updateRouter);
 app.use('/erase', cors(), eraseRouter);
-app.use('/connect', connectRouter);
-
+app.use('/connect', cors(), connectRouter);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
