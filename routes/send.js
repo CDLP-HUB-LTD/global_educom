@@ -4,26 +4,37 @@ const crypto = require("crypto");
 const validator = require('validator');
 
 
+// async function hashPassword(password) {
+//   try {
+//     const salt = crypto.randomBytes(16).toString('hex');
+//     const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512');
+//     return {
+//       salt,
+//       hashedPassword: hash.toString('hex')
+//     };
+//   } catch (error) {
+//     throw new Error('Error hashing password');
+//   }
+// }
+
+// async function verifyPassword(password, hashedPassword, salt) {
+//   try {
+//     const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512');
+//     return hashedPassword === hash.toString('hex');
+//   } catch (error) {
+//     throw new Error('Error verifying password');
+//   }
+// }
+
 async function hashPassword(password) {
-  try {
-    const salt = crypto.randomBytes(16).toString('hex');
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512');
-    return {
-      salt,
-      hashedPassword: hash.toString('hex')
-    };
-  } catch (error) {
-    throw new Error('Error hashing password');
-  }
+  const saltRounds = 10;
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  return { salt, hashedPassword };
 }
 
-async function verifyPassword(password, hashedPassword, salt) {
-  try {
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512');
-    return hashedPassword === hash.toString('hex');
-  } catch (error) {
-    throw new Error('Error verifying password');
-  }
+async function verifyPassword(password, hashedPassword) {
+  return await bcrypt.compare(password, hashedPassword);
 }
 
 /**
@@ -36,10 +47,10 @@ async function verifyPassword(password, hashedPassword, salt) {
  *       200:
  *         description: User created successfully
  */
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
   try {
     const { fname, lname, email, phone, password, confirmPassword } = req.body;
-    const role = 'user'; 
+    const role = 'user';
 
     if (![fname, lname, email, phone, password, confirmPassword].every((field) => field !== undefined && field !== null && field !== '')) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -54,42 +65,35 @@ router.post('/register', (req, res) => {
     }
 
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
-    db.query(checkMailQuery, [email], async function (err, results) {
-      if (err) {
-        return res.status(500).json({ message: 'Error checking email' });
-      }
+    const results = await db.query(checkMailQuery, [email]);
 
-      if (results.length > 0) {
-        return res.status(400).json({ message: 'Email already registered' });
-      }
+    if (results.length > 0) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
 
-      const { salt, hashedPassword } = await hashPassword(password);
+    const { salt, hashedPassword } = await hashPassword(password);
 
-      const insertUserQuery = 'INSERT INTO user (user_fname, user_lname, user_email, user_phone, user_password) VALUES (?, ?, ?, ?, ?)';
-      db.query(insertUserQuery, [fname, lname, email, phone, hashedPassword], function (err, result) {
-        if (err) {
-          return res.status(500).json({ message: 'Error registering user' });
-        }
+    const insertUserQuery = 'INSERT INTO user (user_fname, user_lname, user_email, user_phone, user_password) VALUES (?, ?, ?, ?, ?)';
+    const result = await db.query(insertUserQuery, [fname, lname, email, phone, hashedPassword]);
 
-        req.session.user = {
-          user_id: result.insertId,
-          user_fname,
-          user_lname,
-          user_email,
-          user_phone
-        };
+    req.session.user = {
+      user_id: result.insertId,
+      user_fname,
+      user_lname,
+      user_email,
+      user_phone,
+    };
 
-        return res.status(201).json({
-          message: 'User registered successfully',
-          nextStep: '/next-login-page'
-        });
-      });
+    return res.status(201).json({
+      message: 'User registered successfully',
+      nextStep: '/next-login-page',
     });
   } catch (error) {
     console.error('Error during user registration:', error);
     return res.status(500).json({ message: 'Error registering user' });
   }
 });
+
 
 /**
  * @swagger
@@ -104,7 +108,7 @@ router.post('/register', (req, res) => {
  router.post('/login', (req, res) => {
   const { email, password } = req.body; 
   if (!email || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+    return res.status(400).json({ message: 'All fields are required', flashType: 'error' });
   }
 
   const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
@@ -114,14 +118,14 @@ router.post('/register', (req, res) => {
       }
 
       if (results.length === 0) {
-          return res.status(401).json({ message: 'Email not registered. Please register first.' });
+        return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
       }
 
       const user = results[0];
       const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
       if (!isPasswordMatch) {
-          return res.status(401).json({ message: 'Incorrect email or password' });
-      }
+        return res.status(401).json({ message: 'Incorrect email or password', flashType: 'error' });
+      }    
 
       const sessionUser = {
           user_id: user.user_id,
@@ -131,9 +135,11 @@ router.post('/register', (req, res) => {
       };
       req.session.user = sessionUser;
       return res.status(200).json({
-          message: 'Login successful',
-          user: sessionUser,
-          nextStep: '/user-dashboard', 
+        message: 'Login successful',
+        user: sessionUser,
+        nextStep: '/user-dashboard',
+        flashMessage: 'Welcome back!', 
+        flashType: 'success', 
       });
   });
 });
