@@ -3,6 +3,30 @@ const router = express.Router();
 const database = require('../db');
 
 
+router.put('/users/user/:id', (req, res) => {
+    const db = req.db;
+    const userId = req.params.id;
+    const { fname, lname, email, phone } = req.body;
+
+    const updateUserQuery = `
+        UPDATE users
+        SET user_fname = ?, user_lname = ?, user_email = ?, user_phone = ?
+        WHERE user_id = ?;
+    `;
+
+    database.query(updateUserQuery, [fname, lname, email, phone, userId], (err, result) => {
+        if (err) {
+            console.error("Error updating user profile in the database", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+
+        return res.status(200).json({
+            message: "User profile updated successfully",
+            nextStep: "page refresh"
+        });
+    });
+});
+
 
  router.put("/resources/resource/:id", (req, res) => {
     const resourceId = req.params.id;
