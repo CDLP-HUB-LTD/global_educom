@@ -39,7 +39,8 @@ res.json({ message: "Welcome to Global Educom" });
             if (results.length === 0) {
                 return res.status(404).json({ message: "User not found" });
             } else {
-                return res.json({ data: results });
+                return res.json({ data: results[0] });
+
             }
         }
     });
