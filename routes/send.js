@@ -63,7 +63,7 @@ router.post('/register', async (req, res) => {
 });
 
 
- router.post('/login', (req, res) => {
+router.post('/login', (req, res) => {
   const { email, password } = req.body; 
   if (!email || !password) {
     return res.status(400).json({ message: 'All fields are required', flashType: 'error' });
@@ -71,35 +71,36 @@ router.post('/register', async (req, res) => {
 
   const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
   database.query(checkMailQuery, [email], async (err, results) => {
-      if (err) {
-          return res.status(500).json({ message: 'Error checking user' });
-      }
+    if (err) {
+      return res.status(500).json({ message: 'Error checking user' });
+    }
 
-      if (results.length === 0) {
-        return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
-      }
+    if (results.length === 0) {
+      return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
+    }
 
-      const user = results[0];
-      const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
-      if (!isPasswordMatch) {
-        return res.status(401).json({ message: 'Incorrect email or password', flashType: 'error' });
-      }    
+    const user = results[0];
+    const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
+    
+    if (!isPasswordMatch) {
+      return res.status(401).json({ message: 'Incorrect email or password', flashType: 'error' });
+    }    
 
-      const sessionUser = {
-          user_id: user.user_id,
-          user_fname: user.user_fname,
-          userId: sessionUser.user_id,
-          user_email: user.user_email,
-          user_phone: user.user_phone,
-      };
-      req.session.user = sessionUser;
-      return res.status(200).json({
-        message: 'Login successful',
-        user: sessionUser,
-        nextStep: '/user-dashboard',
-        flashMessage: 'Welcome back!', 
-        flashType: 'success', 
-      });
+    const sessionUser = {
+      userId: user.user_id,
+      user_fname: user.user_fname,
+      user_email: user.user_email,
+      user_phone: user.user_phone,
+    };
+    req.session.user = sessionUser;
+    
+    return res.status(200).json({
+      message: 'Login successful',
+      user: sessionUser,
+      nextStep: '/user-dashboard',
+      flashMessage: `Welcome back, ${user.user_fname}`, 
+      flashType: 'success', 
+    });
   });
 });
 
