@@ -96,6 +96,7 @@ router.post('/login', (req, res) => {
     
     return res.status(200).json({
       message: 'Login successful',
+      userId: user.user_id, // Include userId explicitly
       user: sessionUser,
       nextStep: '/user-dashboard',
       flashMessage: `Welcome back, ${user.user_fname}`, 
@@ -103,6 +104,7 @@ router.post('/login', (req, res) => {
     });
   });
 });
+
 
 
 router.post("/resources/resource", (req, res) => {
