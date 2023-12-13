@@ -88,6 +88,7 @@ router.post('/register', async (req, res) => {
       const sessionUser = {
           user_id: user.user_id,
           user_fname: user.user_fname,
+          userId: sessionUser.user_id,
           user_email: user.user_email,
           user_phone: user.user_phone,
       };
