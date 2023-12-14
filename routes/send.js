@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const validator = require('validator');
 const database = require('../db');
-
-
+const jwt = require('jsonwebtoken');
+const secretKey = process.env.JWT_SECRET || 'gdte73';
 
 async function hashPassword(password) {
   const saltRounds = 10;
@@ -20,17 +19,14 @@ async function verifyPassword(password, hashedPassword, salt) {
 
 router.post('/register', async (req, res) => {
   try {
-    res.header('Access-Control-Allow-Origin', 'https://globaleducom.vercel.app');
-    res.header('Access-Control-Allow-Credentials', true);
-    const db = req.db;
     const { fname, lname, email, phone, password, confirmPassword } = req.body;
     const role = 'user';
 
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
-    const results = await database.query(checkMailQuery, [email]);
+    const existingUser = await database.query(checkMailQuery, [email]);
 
-    if (results.length > 0) {
-      return res.status(400).json({ message: 'Email already registered', flashType: 'error' });
+    if (existingUser.length > 0) {
+      return res.status(400).json({ success: false, message: 'Email already registered', flashType: 'error' });
     }
 
     const { salt, hashedPassword } = await hashPassword(password);
@@ -38,10 +34,6 @@ router.post('/register', async (req, res) => {
     const insertUserQuery = 'INSERT INTO user (user_fname, user_lname, user_email, user_phone, user_password) VALUES (?, ?, ?, ?, ?)';
     const result = await database.query(insertUserQuery, [fname, lname, email, phone, hashedPassword]);
 
-    if (!req.session) {
-      req.session = {};
-    }
-    
     req.session.user = {
       user_id: result.insertId,
       user_fname: fname,
@@ -50,41 +42,43 @@ router.post('/register', async (req, res) => {
       user_phone: phone,
       role: 'user',
     };
+
     return res.status(201).json({
+      success: true,
       message: 'User registered successfully',
       nextStep: '/next-login-page',
-      flashMessage: 'Registration successful!', 
-      flashType: 'success', 
+      flashMessage: 'Registration successful!',
+      flashType: 'success',
     });
+
   } catch (error) {
     console.error('Error during user registration:', error);
-    return res.status(500).json({ message: 'Error registering user', flashType: 'error' });
+    return res.status(500).json({ success: false, message: 'Error registering user', flashType: 'error' });
+  
   }
+
 });
 
-
-router.post('/login', (req, res) => {
-  const { email, password } = req.body; 
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  
   if (!email || !password) {
     return res.status(400).json({ message: 'All fields are required', flashType: 'error' });
   }
 
-  const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
-  database.query(checkMailQuery, [email], async (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Error checking user' });
-    }
+  try {
+    const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
+    const [user] = await database.query(checkMailQuery, [email]);
 
-    if (results.length === 0) {
+    if (!user) {
       return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
     }
 
-    const user = results[0];
     const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
-    
+
     if (!isPasswordMatch) {
       return res.status(401).json({ message: 'Incorrect email or password', flashType: 'error' });
-    }    
+    }
 
     const sessionUser = {
       userId: user.user_id,
@@ -92,19 +86,25 @@ router.post('/login', (req, res) => {
       user_email: user.user_email,
       user_phone: user.user_phone,
     };
-    req.session.user = sessionUser;
     
+    const token = jwt.sign({ userId: user.user_id }, secretKey, { expiresIn: '1h' });
+
+    req.session.user = sessionUser;
+
     return res.status(200).json({
       message: 'Login successful',
-      userId: user.user_id, // Include userId explicitly
+      userId: user.user_id,
       user: sessionUser,
       nextStep: '/user-dashboard',
-      flashMessage: `Welcome back, ${user.user_fname}`, 
-      flashType: 'success', 
+      flashMessage: `Welcome back, ${user.user_fname}`,
+      flashType: 'success',
+      token,
     });
-  });
+  } catch (err) {
+    console.error('Error during login:', err);
+    return res.status(500).json({ message: 'Internal server error', flashType: 'error' });
+  }
 });
-
 
 
 router.post("/resources/resource", (req, res) => {
