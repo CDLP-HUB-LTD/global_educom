@@ -68,24 +68,19 @@ router.post('/login', async (req, res) => {
 
   try {
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
-    const result = await database.query(checkMailQuery, [email]);
+    const [result] = await database.query(checkMailQuery, [email]);
 
-    console.log('Result from query:', result); // Add this line
+    console.log('Result from query:', result);
 
-    if (!result) {
-      console.error('Error: Database query returned undefined.'); // Add this line
-      return res.status(500).json({ error: { message: 'Internal server error' } });
-    }
-
-    if (result.length === 0) {
-      console.log('No user found with the given email:', email); // Add this line
+    if (!result || result.length === 0) {
+      console.log('No user found with the given email:', email);
       return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
     }
 
-    const [user] = result;
+    const user = result[0]; 
 
     if (!user) {
-      console.error('Error: Database query result does not contain a user.'); // Add this line
+      console.error('Error: Database query result does not contain a user.');
       return res.status(500).json({ error: { message: 'Internal server error' } });
     }
 
@@ -95,8 +90,25 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: { message: 'Incorrect email or password' } });
     }
 
-    // The rest of your code remains unchanged
-    // ...
+    const sessionUser = {
+      userId: user.user_id,
+      user_fname: user.user_fname,
+      user_email: user.user_email,
+      user_phone: user.user_phone,
+    };
+    
+    const token = jwt.sign({ userId: user.user_id }, secretKey, { expiresIn: '1h' });
+
+    req.session.user = sessionUser;
+
+    return res.status(200).json({
+      message: 'Login successful',
+      userId: user.user_id,
+      user: sessionUser,
+      nextStep: '/user-dashboard',
+      flashMessage: `Welcome back, ${user.user_fname}`,
+      token,
+    });
   } catch (err) {
     console.error('Error during login:', err);
     return res.status(500).json({ error: { message: 'Internal server error' } });
