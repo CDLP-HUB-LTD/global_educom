@@ -63,7 +63,7 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   
   if (!email || !password) {
-    return res.status(400).json({ message: 'All fields are required', flashType: 'error' });
+    return res.status(400).json({ error: { message: 'All fields are required' } });
   }
 
   try {
@@ -71,13 +71,13 @@ router.post('/login', async (req, res) => {
     const [user] = await database.query(checkMailQuery, [email]);
 
     if (!user) {
-      return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
+      return res.status(401).json({ error: { message: 'Email not registered. Please register first.' } });
     }
 
     const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
 
     if (!isPasswordMatch) {
-      return res.status(401).json({ message: 'Incorrect email or password', flashType: 'error' });
+      return res.status(401).json({ error: { message: 'Incorrect email or password' } });
     }
 
     const sessionUser = {
@@ -97,14 +97,14 @@ router.post('/login', async (req, res) => {
       user: sessionUser,
       nextStep: '/user-dashboard',
       flashMessage: `Welcome back, ${user.user_fname}`,
-      flashType: 'success',
       token,
     });
   } catch (err) {
     console.error('Error during login:', err);
-    return res.status(500).json({ message: 'Internal server error', flashType: 'error' });
+    return res.status(500).json({ error: { message: 'Internal server error' } });
   }
 });
+
 
 
 router.post("/resources/resource", (req, res) => {
