@@ -59,9 +59,11 @@ router.post('/register', async (req, res) => {
 
 });
 
+
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  
+
   if (!email || !password) {
     return res.status(400).json({ error: { message: 'All fields are required' } });
   }
@@ -89,6 +91,7 @@ router.post('/login', async (req, res) => {
     if (!isPasswordMatch) {
       return res.status(401).json({ error: { message: 'Incorrect email or password' } });
     }
+
 
     const sessionUser = {
       userId: user.user_id,
