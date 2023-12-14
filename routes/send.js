@@ -70,7 +70,6 @@ router.post('/login', async (req, res) => {
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
     const result = await database.query(checkMailQuery, [email]);
 
-    console.log('Result from query:', result);
 
     if (!result || result.length === 0) {
       return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
@@ -112,6 +111,7 @@ router.post('/login', async (req, res) => {
     return res.status(500).json({ error: { message: 'Internal server error' } });
   }
 });
+
 
 
 
