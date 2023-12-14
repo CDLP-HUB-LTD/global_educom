@@ -72,12 +72,14 @@ router.post('/login', async (req, res) => {
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
     const result = await database.query(checkMailQuery, [email]);
 
-    if (!result || !result[0]) {
+    console.log('Result from query:', result);
+
+    if (!result || result.length === 0) {
       console.log('No user found with the given email:', email);
       return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
     }
 
-    const user = result[0];
+    const [user] = result;
 
     const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
 
