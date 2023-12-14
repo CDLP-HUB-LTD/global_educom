@@ -68,7 +68,13 @@ router.post('/login', async (req, res) => {
 
   try {
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
-    const [user] = await database.query(checkMailQuery, [email]);
+    const result = await database.query(checkMailQuery, [email]);
+
+    if (!result || result.length === 0) {
+      return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
+    }
+
+    const [user] = result;
 
     if (!user) {
       return res.status(401).json({ error: { message: 'Email not registered. Please register first.' } });
