@@ -70,30 +70,21 @@ router.post('/login', async (req, res) => {
 
   try {
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
-    const [result] = await database.query(checkMailQuery, [email]);
+    const result = await database.query(checkMailQuery, [email]);
 
-    if (!result || !Symbol.iterator in Object(result)) {
-      console.error('Error: Database query result is not iterable.');
-      return res.status(500).json({ error: { message: 'Internal server error' } });
-    }
-
-    if (result.length === 0) {
+    if (!result || !result[0]) {
       console.log('No user found with the given email:', email);
       return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
     }
 
-    const [user] = result;
-
-    if (!user) {
-      console.error('Error: Database query result does not contain a user.');
-      return res.status(500).json({ error: { message: 'Internal server error' } });
-    }
+    const user = result[0];
 
     const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
 
     if (!isPasswordMatch) {
       return res.status(401).json({ error: { message: 'Incorrect email or password' } });
     }
+
 
     const sessionUser = {
       userId: user.user_id,
