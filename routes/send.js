@@ -20,9 +20,12 @@ async function verifyPassword(password, hashedPassword, salt) {
 
 
 router.post('/register', async (req, res) => {
+  let connection;
   try {
     const { fname, lname, email, phone, password, confirmPassword } = req.body;
     const role = 'user';
+
+    connection = mysql.createConnection(req.dbConfig);
 
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
     const existingUser = await database.query(checkMailQuery, [email]);
@@ -55,8 +58,13 @@ router.post('/register', async (req, res) => {
 
   } catch (error) {
     console.error('Error during user registration:', error);
+    
     return res.status(500).json({ success: false, message: 'Error registering user', flashType: 'error' });
-  
+ 
+  } finally {
+    if (connection) {
+      connection.end();
+    }
   }
 
 });
@@ -64,6 +72,8 @@ router.post('/register', async (req, res) => {
 
 
 router.post('/login', async (req, res) => {
+  let connection;
+  connection = mysql.createConnection(req.dbConfig);
   johnny = "SELECT user_id, user_fname, user_email, user_password, salt FROM user WHERE user_email = 'johnnybravo@yahoo.com'";
   johnny_resp = await database.query(johnny);
   console.log("User John =", johnny_resp[0]);
@@ -129,6 +139,11 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error('Error during login:', err);
     return res.status(500).json({ error: { message: 'Internal server error' } });
+  
+  } finally {
+    if (connection) {
+      connection.end(); 
+    }
   }
 });
 
@@ -137,9 +152,12 @@ router.post('/login', async (req, res) => {
 
 
 router.post("/resources/resource", (req, res) => {
+  let connection;
   const { title, course_id, description, content, img } = req.body;
   const userId = req.session.user.user_id; 
   const userRole = req.session.user.role; 
+
+  connection = mysql.createConnection(req.dbConfig);
 
   if (userRole === 'contributor' || userRole === 'admin') {
     let status = 'approved'; 
@@ -163,13 +181,19 @@ router.post("/resources/resource", (req, res) => {
 
     res.status(403).json({ message: 'Unauthorized access' }); // User is not authorized to create a resource
   }
+  if (connection) {
+    connection.end(); 
+  }
 });
 
 
 router.post('/admin/register', async (req, res) => {
+  let connection;
   try {
     const { fname, lname, email, phone, password, confirmPassword } = req.body;
     const role = 'admin'; 
+
+    connection = mysql.createConnection(req.dbConfig);
 
     if (![fname, lname, email, phone, password, confirmPassword].every((field) => field !== undefined && field !== null && field !== '')) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -212,16 +236,24 @@ router.post('/admin/register', async (req, res) => {
   } catch (error) {
     console.error('Error during admin registration:', error);
     return res.status(500).json({ message: 'Error registering admin' });
+  
+  } finally {
+    if (connection) {
+      connection.end(); 
+    }
   }
 });
 
 
 
  router.post('/admin/login', (req, res) => {
+  let connection;
   const { email, password } = req.body; 
   if (!email || !password) {
       return res.status(400).json({ message: 'All fields are required' });
   }
+
+  connection = mysql.createConnection(req.dbConfig);
 
   const checkMailQuery = 'SELECT * FROM admin WHERE admin_email = ?';
   database.query(checkMailQuery, [email], async (err, results) => {
@@ -246,12 +278,18 @@ router.post('/admin/register', async (req, res) => {
           admin_phone: admin.admin_phone,
       };
       req.session.admin = sessionAdmin;
+   
+      if (connection) {
+        connection.end(); 
+      }
+      
       return res.status(200).json({
           message: 'Login successful',
           admin: sessionAdmin,
           nextStep: '/admin-dashboard', 
-      });
-  });
+      });  
+    });
+ 
 });
 
 

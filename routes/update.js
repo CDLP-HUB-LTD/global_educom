@@ -14,7 +14,7 @@ router.put('/users/user/:id', (req, res) => {
         WHERE user_id = ?;
     `;
 
-    database.query(updateUserQuery, [fname, lname, email, phone, userId], (err, result) => {
+    req.db.query(updateUserQuery, [fname, lname, email, phone, userId], (err, result) => {
         if (err) {
             console.error("Error updating user profile in the database", err);
             return res.status(500).json({ message: "Internal Server Error" });
@@ -41,7 +41,7 @@ router.put('/users/user/:id', (req, res) => {
                 resource_content = ?, resource_img = ?
             WHERE resource_id = ?`;
 
-        database.query(
+        req.db.query(
             updateResourceQuery,
             [title, course_id, description, content, img, resourceId],
             (err, result) => {
@@ -75,7 +75,7 @@ router.put('/users/user/:id', (req, res) => {
         WHERE resource_id = ?
     `;
 
-    database.query(updateStatusQuery, [resourceId], (err, result) => {
+    req.db.query(updateStatusQuery, [resourceId], (err, result) => {
         if (err) {
             console.error("Error updating resource status in the database", err);
             return res.status(500).json({ message: "Internal Server Error" });

@@ -20,7 +20,7 @@ const database = require('../db');
         deleteQuery = 'DELETE FROM resource WHERE resource_id = ? AND user_id = ? AND status = "approved"';
     }
 
-    database.query(deleteQuery, [resourceId, userId], (err, result) => {
+    req.db.query(deleteQuery, [resourceId, userId], (err, result) => {
         if (err) {
             console.error("Error deleting resource from the database", err);
             return res.status(500).json({ message: "Internal Server Error" });

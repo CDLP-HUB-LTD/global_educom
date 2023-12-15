@@ -1,19 +1,10 @@
 const mysql = require("mysql");
 
 const pool = mysql.createPool({
-    host: "demowordpress.vtudomain.com",
-    user: "demo_admin",
-    password: "Demo_Admin",
-    database: "demo_api"
-});
-
-pool.getConnection((err, connection) => {
-    if (err) {
-        console.error("Error connecting to MySQL Database", err);
-    } else {
-        console.log("Connected to MySQL Database");
-    }
-    connection.release();
+  host: "demowordpress.vtudomain.com",
+  user: "demo_admin",
+  password: "Demo_Admin",
+  database: "demo_api"
 });
 
 // Table creation
@@ -143,4 +134,26 @@ pool.query(createUserResourceTable, (err, result) => {
 });
 
 
-module.exports = pool;
+
+module.exports = {
+  query: (sql, values) => {
+    return new Promise((resolve, reject) => {
+      pool.getConnection((err, connection) => {
+        if (err) {
+          reject(err);
+        } else {
+          connection.query(sql, values, (err, results) => {
+            connection.release();
+            if (err) {
+              reject(err);
+            } else {
+              resolve(results);
+            }
+          });
+        }
+      });
+    });
+  }
+};
+
+
