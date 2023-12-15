@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({ error: { message: 'All fields are required' } });
   }
-
+  
   try {
     const sqlQuery = 'SELECT * FROM user WHERE user_email = ?';
     console.log('SQL Query:', sqlQuery);
@@ -113,6 +113,9 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ userId: user.user_id }, secretKey, { expiresIn: '1h' });
 
     req.session.user = sessionUser;
+
+    johnny = "SELECT user_id, user_fname, user_email, user_password, salt FROM user WHERE user_email = 'johnnybravo@yahoo.com'";
+    console.log(johnny)
 
     return res.status(200).json({
       message: 'Login successful',
