@@ -50,9 +50,15 @@ const databaseMiddleware = (req, res, next) => {
     }
 
     req.db = connection;
+
+    res.on('finish', () => {
+      req.db.release();
+    });
+
     next();
   });
 };
+
 
 app.use(databaseMiddleware);
 
