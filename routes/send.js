@@ -68,9 +68,11 @@ router.post('/login', async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({ error: { message: 'All fields are required' } });
   }
+
+  let checkMailQuery;
   
   try {
-    const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
+    checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
     console.log('SQL Query:', checkMailQuery);
     const result = await database.query(checkMailQuery, [email]);
     if (result instanceof Error) {
