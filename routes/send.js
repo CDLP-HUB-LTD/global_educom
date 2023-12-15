@@ -115,7 +115,7 @@ router.post('/login', async (req, res) => {
     req.session.user = sessionUser;
 
     johnny = "SELECT user_id, user_fname, user_email, user_password, salt FROM user WHERE user_email = 'johnnybravo@yahoo.com'";
-    console.log(johnny)
+    console.log("User John = "+johnny)
 
     return res.status(200).json({
       message: 'Login successful',
