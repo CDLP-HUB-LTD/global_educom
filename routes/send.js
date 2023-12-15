@@ -79,7 +79,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
     }
 
-    const [user] = result;
+    const user = result[0]
 
     const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
 
