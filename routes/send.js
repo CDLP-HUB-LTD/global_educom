@@ -79,13 +79,13 @@ router.post('/login', async (req, res) => {
     }
 
     
-    console.log('Result from query:', {
-      sql: result.sql,
-      values: result.values,
-      _results: util.inspect(result._results, { depth: null }),
-      _fields: result._fields,
-      _loadError: result._loadError,
-    });    
+    // console.log('Result from query:', {
+    //   sql: result.sql,
+    //   values: result.values,
+    //   _results: util.inspect(result._results, { depth: null }),
+    //   _fields: result._fields,
+    //   _loadError: result._loadError,
+    // });    
 
     if (result && result.length > 0) {
       const user = result[0];
@@ -107,6 +107,9 @@ if (!user) {
 
 console.log('Retrieved user from database:', user);
 console.log('SQL Query:', checkMailQuery);
+const { sql, values, _results, _fields, _loadError } = result;
+console.log('Result from query:', { sql, values, _results, _fields, _loadError });
+
 
 
 if (!user.user_password || !user.salt) {
