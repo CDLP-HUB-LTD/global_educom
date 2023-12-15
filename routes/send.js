@@ -65,11 +65,12 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+  console.log('SQL Query:', checkMailQuery);
 
   if (!email || !password) {
     return res.status(400).json({ error: { message: 'All fields are required' } });
   }
-
+  
   try {
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
     const result = await database.query(checkMailQuery, [email]);
@@ -77,15 +78,7 @@ router.post('/login', async (req, res) => {
       console.error('Error executing database query:', result);
       return res.status(500).json({ error: { message: 'Internal server error' } });
     }
-
-    
-    // console.log('Result from query:', {
-    //   sql: result.sql,
-    //   values: result.values,
-    //   _results: util.inspect(result._results, { depth: null }),
-    //   _fields: result._fields,
-    //   _loadError: result._loadError,
-    // });    
+    console.log('Query Result:', result);
 
     if (result && result.length > 0) {
       const user = result[0];
