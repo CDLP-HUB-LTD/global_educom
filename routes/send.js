@@ -79,7 +79,19 @@ router.post('/login', async (req, res) => {
 
     const user = result[0];
 
-    const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
+if (!user) {
+  console.log('No user found with the given email:', email);
+  return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
+}
+
+console.log('Retrieved user from database:', user);
+
+if (!user.user_password || !user.salt) {
+  console.log('User data is missing required properties:', user);
+  return res.status(500).json({ message: 'User data is incomplete', flashType: 'error' });
+}
+
+const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
 
     if (!isPasswordMatch) {
       return res.status(401).json({ error: { message: 'Incorrect email or password' } });
