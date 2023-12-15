@@ -4,6 +4,8 @@ const bcrypt = require('bcrypt');
 const database = require('../db');
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET || 'gdte73';
+const util = require('util');
+
 
 async function hashPassword(password) {
   const saltRounds = 10;
@@ -73,6 +75,7 @@ router.post('/login', async (req, res) => {
     const result = await database.query(checkMailQuery, [email]);
     console.log('Result from query:', result);
     console.log('Result structure:', JSON.stringify(result, null, 2));
+    console.log('Result from query:', util.inspect(result, { depth: null }));
 
     console.log('Result from query:', {
       sql: result.sql,
