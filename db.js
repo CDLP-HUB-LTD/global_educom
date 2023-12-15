@@ -29,11 +29,13 @@ const createUserTable = `
         user_email VARCHAR(120) UNIQUE,
         user_phone VARCHAR(50),
         user_password VARCHAR(80),
+        salt VARCHAR(80),  -- Add this line
         role VARCHAR(50) DEFAULT 'user',
         
         PRIMARY KEY (user_id)
     );
 `;
+
 
 const createDisciplineTable = `
     CREATE TABLE IF NOT EXISTS discipline (
