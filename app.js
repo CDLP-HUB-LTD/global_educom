@@ -64,7 +64,6 @@ const databaseMiddleware = (req, res, next) => {
 };
 
 
-
 app.use(databaseMiddleware);
 
 // Routes
