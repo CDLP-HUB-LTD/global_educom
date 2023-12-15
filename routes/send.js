@@ -72,6 +72,7 @@ router.post('/login', async (req, res) => {
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
     const result = await database.query(checkMailQuery, [email]);
     console.log('Result from query:', result);
+    console.log('Result structure:', JSON.stringify(result, null, 2));
 
     if (!result) {
       console.log('No user found with the given email:', email);
@@ -80,6 +81,7 @@ router.post('/login', async (req, res) => {
 
     const user = result[0];
     console.log('User found:', user);
+    console.log('User structure:', JSON.stringify(user, null, 2));
 
 if (!user) {
   console.log('No user found with the given email:', email);
