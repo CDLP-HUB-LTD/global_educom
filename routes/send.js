@@ -76,67 +76,60 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   let connection;
   connection = mysql.createConnection(req.dbConfig);
+
   const { email, password } = req.body;
+
   if (!email || !password) {
     return res.status(400).json({ error: { message: 'All fields are required' } });
   }
 
   let user;
-  
+
   try {
     const sqlQuery = 'SELECT * FROM user WHERE user_email = ?';
     console.log('SQL Query:', sqlQuery);
     const result = await database.query(sqlQuery, [email]);
-    if (result instanceof Error) {
-      console.error('Error executing database query:', result);
-      return res.status(500).json({ error: { message: 'Internal server error' } });
-    }
     console.log('Query Result:', result);
 
     if (result && result.length > 0) {
-      user = result[0]; 
+      user = result[0];
       console.log('User found:', user);
 
       console.log('Provided Password:', password);
       console.log('Stored Password:', user.user_password);
 
+      const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
+      console.log('Is password match:', isPasswordMatch);
+
+      if (!isPasswordMatch) {
+        return res.status(401).json({ error: { message: 'Incorrect email or password' } });
+      }
+
+      const sessionUser = {
+        userId: user.user_id,
+        user_fname: user.user_fname,
+        user_email: user.user_email,
+        user_phone: user.user_phone,
+      };
+
+      const token = jwt.sign({ userId: user.user_id }, secretKey, { expiresIn: '1h' });
+
+      req.session.user = sessionUser;
+
+      return res.status(200).json({
+        message: 'Login successful',
+        userId: user.user_id,
+        user: sessionUser,
+        nextStep: '/user-dashboard',
+        flashMessage: `Welcome back, ${user.user_fname}`,
+        token,
+      });
     } else {
       console.log('No user found with the given email:', email);
       console.log('Result from database:', result);
       return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
     }
-  
-    if (!user.user_password || !user.salt) {
-      console.log('User data is missing required properties:', user);
-      return res.status(500).json({ message: 'User data is incomplete', flashType: 'error' });
-    }
 
-    const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
-    console.log('Is password match:', isPasswordMatch);
-    if (!isPasswordMatch) {
-      return res.status(401).json({ error: { message: 'Incorrect email or password' } });
-    }
-
-    const sessionUser = {
-      userId: user.user_id,
-      user_fname: user.user_fname,
-      user_email: user.user_email,
-      user_phone: user.user_phone,
-    };
-    
-    const token = jwt.sign({ userId: user.user_id }, secretKey, { expiresIn: '1h' });
-
-    req.session.user = sessionUser;
-
-    return res.status(200).json({
-      message: 'Login successful',
-      userId: user.user_id,
-      user: sessionUser,
-      nextStep: '/user-dashboard',
-      flashMessage: `Welcome back, ${user.user_fname}`,
-      token,
-    });
-  
   } catch (err) {
     console.error('Error during login:', err);
     return res.status(500).json({ error: { message: 'Internal server error' } });
