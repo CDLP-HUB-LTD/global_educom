@@ -65,7 +65,6 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
   if (!email || !password) {
     return res.status(400).json({ error: { message: 'All fields are required' } });
   }
@@ -93,28 +92,30 @@ router.post('/login', async (req, res) => {
     console.log('User found:', user);
     console.log('User structure:', JSON.stringify(user, null, 2));
 
-if (!user) {
-  console.log('No user found with the given email:', email);
-  return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
-}
-
-console.log('Retrieved user from database:', user);
-console.log('SQL Query:', checkMailQuery);
-const { sql, values, _results, _fields, _loadError } = result;
-console.log('Result from query:', { sql, values, _results, _fields, _loadError });
-
-
-
-if (!user.user_password || !user.salt) {
-  console.log('User data is missing required properties:', user);
-  return res.status(500).json({ message: 'User data is incomplete', flashType: 'error' });
-}
-
-const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
-  console.log('Is password match:', isPasswordMatch);
-    if (!isPasswordMatch) {
-      return res.status(401).json({ error: { message: 'Incorrect email or password' } });
+    if (!user) {
+      console.log('No user found with the given email:', email);
+      return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
     }
+
+    console.log('Retrieved user from database:', user);
+    console.log('SQL Query:', checkMailQuery);
+    const { sql, values, _results, _fields, _loadError } = result;
+    console.log('Result from query:', { sql, values, _results, _fields, _loadError });
+    console.log('Email from database:', user.user_email);
+    console.log('Provided email:', email);
+
+
+
+    if (!user.user_password || !user.salt) {
+      console.log('User data is missing required properties:', user);
+      return res.status(500).json({ message: 'User data is incomplete', flashType: 'error' });
+    }
+
+    const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
+      console.log('Is password match:', isPasswordMatch);
+        if (!isPasswordMatch) {
+          return res.status(401).json({ error: { message: 'Incorrect email or password' } });
+        }
 
 
     const sessionUser = {
