@@ -88,6 +88,7 @@ router.post('/login', async (req, res) => {
 
     } else {
       console.log('No user found with the given email:', email);
+      console.log('Result from database:', result);
       return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
     }
   
