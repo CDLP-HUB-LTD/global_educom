@@ -49,6 +49,8 @@ const databaseMiddleware = (req, res, next) => {
       return res.status(500).json({ message: 'Internal Server Error' });
     }
 
+    console.log('Thread ID:', connection.threadId);
+
     req.db = connection;
 
     res.on('finish', () => {
@@ -58,6 +60,7 @@ const databaseMiddleware = (req, res, next) => {
     next();
   });
 };
+
 
 
 app.use(databaseMiddleware);
