@@ -74,10 +74,22 @@ router.post('/login', async (req, res) => {
     console.log('Result from query:', result);
     console.log('Result structure:', JSON.stringify(result, null, 2));
 
-    if (!result) {
+    console.log('Result from query:', {
+      sql: result.sql,
+      values: result.values,
+      _results: result._results,
+      _fields: result._fields,
+      _loadError: result._loadError,
+    });
+
+    if (result && result.length > 0) {
+      const user = result[0];
+      console.log('User found:', user);
+      
+    } else {
       console.log('No user found with the given email:', email);
       return res.status(401).json({ message: 'Email not registered. Please register first.', flashType: 'error' });
-    }
+    }   
 
     const user = result[0];
     console.log('User found:', user);
