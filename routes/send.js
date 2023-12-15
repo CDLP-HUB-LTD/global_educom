@@ -65,8 +65,8 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   johnny = "SELECT user_id, user_fname, user_email, user_password, salt FROM user WHERE user_email = 'johnnybravo@yahoo.com'";
-  johnny_resp = await database.query(johnny)
-  console.log("User John =", johnny_resp)
+  johnny_resp = await database.query(johnny);
+  console.log("User John =", johnny_resp[0]);
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: { message: 'All fields are required' } });
