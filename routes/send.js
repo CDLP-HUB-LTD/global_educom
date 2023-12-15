@@ -76,15 +76,12 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   let connection;
   connection = mysql.createConnection(req.dbConfig);
-  johnny = "SELECT user_id, user_fname, user_email, user_password, salt FROM user WHERE user_email = 'johnnybravo@yahoo.com'";
-  johnny_resp = await database.query(johnny);
-  console.log("User John =", johnny_resp[0]);
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: { message: 'All fields are required' } });
   }
 
-  let user; // Declare user variable here
+  let user;
   
   try {
     const sqlQuery = 'SELECT * FROM user WHERE user_email = ?';
@@ -97,7 +94,7 @@ router.post('/login', async (req, res) => {
     console.log('Query Result:', result);
 
     if (result && result.length > 0) {
-      user = result[0]; // Assign user here
+      user = result[0]; 
       console.log('User found:', user);
 
       console.log('Provided Password:', password);
