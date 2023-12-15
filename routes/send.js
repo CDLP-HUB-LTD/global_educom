@@ -73,14 +73,19 @@ router.post('/login', async (req, res) => {
   try {
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
     const result = await database.query(checkMailQuery, [email]);
+    if (result instanceof Error) {
+      console.error('Error executing database query:', result);
+      return res.status(500).json({ error: { message: 'Internal server error' } });
+    }
+
     
     console.log('Result from query:', {
       sql: result.sql,
       values: result.values,
-      _results: result._results ? result._results.slice(0, 5) : null,
+      _results: util.inspect(result._results, { depth: null }),
       _fields: result._fields,
       _loadError: result._loadError,
-    });
+    });    
 
     if (result && result.length > 0) {
       const user = result[0];
@@ -101,6 +106,8 @@ if (!user) {
 }
 
 console.log('Retrieved user from database:', user);
+console.log('SQL Query:', checkMailQuery);
+
 
 if (!user.user_password || !user.salt) {
   console.log('User data is missing required properties:', user);
