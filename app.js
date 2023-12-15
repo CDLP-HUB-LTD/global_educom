@@ -43,9 +43,11 @@ const options = {
 app.options('*', cors());
 
 const databaseMiddleware = (req, res, next) => {
-  pool.getConnection((err, connection) => {
+  const connection = mysql.createConnection(dbConfig);
+
+  connection.connect((err) => {
     if (err) {
-      console.error('Error getting database connection:', err);
+      console.error('Error connecting to MySQL Database:', err);
       return res.status(500).json({ message: 'Internal Server Error' });
     }
 
@@ -54,7 +56,7 @@ const databaseMiddleware = (req, res, next) => {
     req.db = connection;
 
     res.on('finish', () => {
-      req.db.release();
+      req.db.end();
     });
 
     next();
