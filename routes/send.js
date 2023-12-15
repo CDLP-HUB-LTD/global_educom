@@ -5,6 +5,8 @@ const database = require('../db');
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET || 'gdte73';
 const util = require('util');
+const mysql = require("mysql");
+
 
 
 async function hashPassword(password) {
