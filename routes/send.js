@@ -83,6 +83,8 @@ router.post('/login', async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({ error: { message: 'All fields are required' } });
   }
+
+  let user; // Declare user variable here
   
   try {
     const sqlQuery = 'SELECT * FROM user WHERE user_email = ?';
@@ -95,7 +97,7 @@ router.post('/login', async (req, res) => {
     console.log('Query Result:', result);
 
     if (result && result.length > 0) {
-      const user = result[0];
+      user = result[0]; // Assign user here
       console.log('User found:', user);
 
       console.log('Provided Password:', password);
@@ -141,7 +143,7 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error('Error during login:', err);
     return res.status(500).json({ error: { message: 'Internal server error' } });
-  
+
   } finally {
     if (connection) {
       connection.end(); 
