@@ -71,6 +71,7 @@ router.post('/login', async (req, res) => {
   try {
     const checkMailQuery = 'SELECT * FROM user WHERE user_email = ?';
     const result = await database.query(checkMailQuery, [email]);
+    console.log('Result from query:', result);
 
     if (!result) {
       console.log('No user found with the given email:', email);
@@ -78,6 +79,7 @@ router.post('/login', async (req, res) => {
     }
 
     const user = result[0];
+    console.log('User found:', user);
 
 if (!user) {
   console.log('No user found with the given email:', email);
@@ -92,7 +94,7 @@ if (!user.user_password || !user.salt) {
 }
 
 const isPasswordMatch = await verifyPassword(password, user.user_password, user.salt);
-
+  console.log('Is password match:', isPasswordMatch);
     if (!isPasswordMatch) {
       return res.status(401).json({ error: { message: 'Incorrect email or password' } });
     }
