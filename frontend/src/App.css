@@ -1,0 +1,86 @@
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  overflow-x: hidden;
+  scroll-behavior: smooth; 
+  font-family: Montserrat, sans-serif;
+}
+
+.html{
+  scroll-behavior: smooth;
+}
+
+#root{
+  height:100%;
+}
+
+.App{
+  background-color: #ffffff;
+  color: #000;
+}
+
+
+
+
+
+.heading,
+.headerbanner_container{
+  background-color:#190E4F;
+}
+
+.headerbanner{
+  transform: translateY(calc(-50% - 25px));
+}
+
+.logo{
+  position: relative;
+  top: -30% !important;
+}
+
+#hero{
+  right: -16px;
+}
+
+.newsletter{
+  font-size: larger;
+}
+
+.card{
+  background-color:#FA9F42;
+}
+
+.badge{
+  padding: 11.1px 21px;
+}
+
+
+.mainNav li{
+  list-style: none;
+}
+.navLnks{
+  text-decoration: none !important;
+  list-style: none !important;
+}
+
+
+
+.quest{
+  background-image: url(../src/assets/images/gallery/quotation.png) !important;
+}
+
+
+@media (min-width: 768px) {
+  .gradient-form {
+    height: 100vh !important;
+  }
+}
+@media (min-width: 769px) {
+  .gradient-custom-2 {
+    border-top-right-radius: .3rem;
+    border-bottom-right-radius: .3rem;
+  }
+}
